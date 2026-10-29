@@ -1,0 +1,33 @@
+# systemd unit бота мониторинга эфиров.
+# Секреты — только через EnvironmentFile (.env с правами 600), в unit их не пишем.
+[Unit]
+Description=Telegram stream monitor bot (@Alert_Checker_RealTime_bot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=streammon
+Group=streammon
+WorkingDirectory=/opt/stream-monitor
+EnvironmentFile=/opt/stream-monitor/.env
+ExecStart=/opt/stream-monitor/.venv/bin/python /opt/stream-monitor/main.py
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+
+# Харденинг
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/stream-monitor/data /opt/stream-monitor/logs
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target
